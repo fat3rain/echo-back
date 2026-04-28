@@ -85,8 +85,8 @@ func (u *User) IsVideoEnabled() bool {
 	return u.VideoEnabled
 }
 
-func trackKey(sourceID string, kind webrtc.RTPCodecType) string {
-	return sourceID + "|" + kind.String()
+func trackKey(sourceID string, kind webrtc.RTPCodecType, trackID string) string {
+	return sourceID + "|" + kind.String() + "|" + trackID
 }
 
 func drainRTCP(sender *webrtc.RTPSender) {
@@ -140,11 +140,11 @@ func (u *User) ensurePeerConnection() error {
 
 		sourceID := u.ID
 		room := u.room
-		key := trackKey(sourceID, remoteTrack.Kind())
 		trackID := remoteTrack.ID()
 		if trackID == "" {
 			trackID = remoteTrack.Kind().String()
 		}
+		key := trackKey(sourceID, remoteTrack.Kind(), trackID)
 
 		incoming := &IncomingTrack{
 			Key:      key,
