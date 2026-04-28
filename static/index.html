@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceChat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #151520;
+      --bg-tertiary: #1e1e2e;
+      --bg-hover: #252538;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --text-primary: #e4e4e7;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --success: #10b981;
+      --error: #ef4444;
+      --border: #27272a;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      font-weight: 400;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 8px 16px var(--shadow);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--bg-hover);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    button {
+      padding: 0.875rem 1.5rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-hover);
+      border-color: var(--accent);
+    }
+
+    .btn-danger {
+      background: var(--error);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #dc2626;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 1rem;
+    }
+
+    .status-badge.success {
+      color: var(--success);
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    #tokenDisplay {
+      font-weight: 500;
+    }
+
+    #log {
+      white-space: pre-wrap;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      height: 300px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    #log::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #log::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: 4px;
+    }
+
+    #log::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    #log::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    #audios {
+      display: none;
+    }
+
+    #mediaGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .media-tile {
+      padding: 1rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+
+    .media-tile video {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 16px;
+      background: #071625;
+      display: none;
+    }
+
+    .media-meta {
+      margin-top: 0.75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .media-note {
+      margin-top: 0.35rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .toggle-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 500;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+
+    .toggle-chip input {
+      width: 16px;
+      height: 16px;
+    }
+
+    .auth-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .auth-section {
+        grid-template-columns: 1fr;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>VoiceChat</h1>
+      <p class="subtitle">Современный голосовой чат с WebRTC</p>
+    </header>
+
+    <div class="card fade-in">
+      <div class="card-title">Авторизация</div>
+      <div class="auth-section">
+        <div>
+          <div class="form-group">
+            <label>Имя пользователя</label>
+            <input id="regUser" type="text" placeholder="Введите имя пользователя">
+          </div>
+          <div class="form-group">
+            <label>Пароль</label>
+            <input id="regPass" type="password" placeholder="Введите пароль">
+          </div>
+          <button id="regBtn">Зарегистрироваться</button>
+        </div>
+        <div>
+          <div class="form-group">
+            <label>Имя пользователя</label>
+            <input id="loginUser" type="text" placeholder="Введите имя пользователя">
+          </div>
+          <div class="form-group">
+            <label>Пароль</label>
+            <input id="loginPass" type="password" placeholder="Введите пароль">
+          </div>
+          <button id="loginBtn">Войти</button>
+        </div>
+      </div>
+      <div id="tokenDisplay" class="status-badge"></div>
+    </div>
+
+    <div class="card fade-in">
+      <div class="card-title">Подключение</div>
+      <div class="form-group">
+        <label>Комната</label>
+        <input id="room" type="text" value="room1" placeholder="Название комнаты">
+      </div>
+      <label class="toggle-chip">
+        <input id="cameraEnabled" type="checkbox">
+        Подключить камеру вместе с голосом
+      </label>
+      <div class="btn-group">
+        <button id="connectBtn">Подключиться</button>
+        <button id="leaveBtn" class="btn-danger" disabled>Покинуть</button>
+        <button id="statsBtn" class="btn-secondary" disabled>Статистика</button>
+      </div>
+    </div>
+
+    <div class="card fade-in">
+      <div class="card-title">Лог событий</div>
+      <div id="log"></div>
+    </div>
+
+    <div class="card fade-in">
+      <div class="card-title">Медиа</div>
+      <div id="mediaGrid"></div>
+    </div>
+
+    <div id="audios"></div>
+  </div>
+
+<script>
+const logEl = document.getElementById('log')
+const tokenDisplay = document.getElementById('tokenDisplay')
+const mediaGrid = document.getElementById('mediaGrid')
+const cameraToggle = document.getElementById('cameraEnabled')
+const mediaTiles = new Map()
+
+function log(s) { 
+  const timestamp = new Date().toLocaleTimeString('ru-RU');
+  logEl.textContent += `[${timestamp}] ${s}\n`; 
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function updateTokenDisplay(text, isSuccess = false) {
+  tokenDisplay.textContent = text;
+  if (isSuccess) {
+    tokenDisplay.classList.add('success');
+  } else {
+    tokenDisplay.classList.remove('success');
+  }
+}
+
+let pc = null;
+let ws = null;
+let localStream = null;
+let userId = null;
+let statsInterval = null;
+
+function ensureMediaTile(id, title) {
+  let tile = mediaTiles.get(id)
+  if (tile) {
+    tile.title.textContent = title
+    return tile
+  }
+
+  const wrapper = document.createElement('div')
+  wrapper.className = 'media-tile'
+
+  const video = document.createElement('video')
+  video.autoplay = true
+  video.playsInline = true
+
+  const titleEl = document.createElement('div')
+  titleEl.className = 'media-meta'
+  titleEl.textContent = title
+
+  const note = document.createElement('div')
+  note.className = 'media-note'
+
+  const audio = document.createElement('audio')
+  audio.autoplay = true
+
+  wrapper.appendChild(video)
+  wrapper.appendChild(titleEl)
+  wrapper.appendChild(note)
+  wrapper.appendChild(audio)
+  mediaGrid.appendChild(wrapper)
+
+  tile = { wrapper, video, title: titleEl, note, audio }
+  mediaTiles.set(id, tile)
+  return tile
+}
+
+function updateMediaTile(id, title, stream, { muted = false } = {}) {
+  const tile = ensureMediaTile(id, title)
+  const hasVideo = stream && stream.getVideoTracks().length > 0
+
+  tile.title.textContent = title
+  tile.audio.srcObject = muted ? null : stream
+  tile.audio.muted = muted
+
+  if (hasVideo) {
+    tile.video.srcObject = stream
+    tile.video.style.display = 'block'
+    tile.note.textContent = muted ? 'Ваше локальное видео активно' : 'Видео активно'
+  } else {
+    tile.video.srcObject = null
+    tile.video.style.display = 'none'
+    tile.note.textContent = muted
+      ? 'Голосовой режим, камера выключена'
+      : 'Участник в голосовом режиме'
+  }
+}
+
+function clearMediaTiles() {
+  mediaGrid.innerHTML = ''
+  mediaTiles.clear()
+}
+
+document.getElementById('connectBtn').onclick = async () => {
+  const room = document.getElementById('room').value || 'room1';
+  const withCamera = cameraToggle.checked;
+  ws = new WebSocket("ws://"+location.host+"/ws");
+  
+    ws.onopen = async () => {
+    log("🔌 WebSocket подключен");
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: withCamera });
+      log(withCamera ? "🎤🎥 Доступ к микрофону и камере получен" : "🎤 Доступ к микрофону получен");
+      updateMediaTile('local-preview', 'Вы', localStream, { muted: true });
+    } catch(e) {
+      log("❌ Ошибка доступа к устройствам: " + e.message);
+      ws.close();
+      return;
+    }
+    
+    pc = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    });
+
+    pc.ontrack = (ev) => {
+      const stream = ev.streams[0];
+      const hasVideo = stream && stream.getVideoTracks().length > 0;
+      log(hasVideo ? `🎥 Получен удалённый медиапоток (${ev.streams.length} потоков)` : `🎵 Получен удалённый аудиопоток (${ev.streams.length} потоков)`);
+      updateMediaTile(stream.id || `remote-${Date.now()}`, `Участник ${stream.id || ''}`.trim(), stream);
+    };
+
+    pc.onicecandidate = (e) => {
+      if (!e.candidate) return;
+      ws.send(JSON.stringify({ type: "candidate", candidate: e.candidate }));
+    };
+
+    for (const t of localStream.getTracks()){
+      pc.addTrack(t, localStream);
+    }
+
+    ws.onmessage = async (ev) => {
+      const msg = JSON.parse(ev.data);
+      log(`📨 Сообщение: ${msg.type}`);
+      
+      if (msg.type === "answer") {
+        const desc = { type: "answer", sdp: msg.sdp };
+        await pc.setRemoteDescription(desc);
+        log("✅ Установлено удаленное описание (answer)");
+      } else if (msg.type === "offer") {
+        const offer = { type: "offer", sdp: msg.sdp };
+        await pc.setRemoteDescription(offer);
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        ws.send(JSON.stringify({ type: "answer", sdp: answer.sdp, sdpType: "answer" }));
+        log("✅ Отправлен ответ на предложение сервера");
+      } else if (msg.type === "candidateFromServer" || msg.type === "candidate") {
+        if (msg.candidate) {
+          try {
+            await pc.addIceCandidate(msg.candidate);
+            log("✅ Добавлен ICE кандидат");
+          } catch(e) {
+            console.warn(e);
+          }
+        }
+      }
+    };
+
+  /*
+    Точка интеграции: initial join (WebRTC offer + token)
+    - Создаём локальный SDP-offer
+    - Берём токен из sessionStorage (ключ 'vc_token')
+    - Отправляем по WebSocket сообщение join:
+      { type: "join", room, sdp: offer.sdp, sdpType: "offer", token }
+    Сервер ожидает этот формат и валидирует токен (JWT).
+  */
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+    
+  const token = sessionStorage.getItem('vc_token');
+    if (!token) {
+      log("❌ ОШИБКА: необходимо сначала войти в систему");
+      ws.close();
+      return;
+    }
+    
+    ws.send(JSON.stringify({ type: "join", room: room, sdp: offer.sdp, sdpType: "offer", token: token }));
+    log(`📤 Отправлен запрос на подключение к комнате "${room}"`);
+
+    document.getElementById('connectBtn').disabled = true;
+    document.getElementById('leaveBtn').disabled = false;
+    document.getElementById('statsBtn').disabled = false;
+  };
+
+  ws.onclose = () => { 
+    log('🔌 WebSocket закрыт');
+    document.getElementById('connectBtn').disabled = false;
+    document.getElementById('leaveBtn').disabled = true;
+    document.getElementById('statsBtn').disabled = true;
+  };
+  
+  ws.onerror = (e) => { 
+    log('❌ Ошибка WebSocket: ' + JSON.stringify(e));
+  };
+};
+
+document.getElementById('regBtn').onclick = async () => {
+  const username = document.getElementById('regUser').value.trim();
+  const password = document.getElementById('regPass').value;
+  
+  if (!username || !password) {
+    log('⚠️ Заполните все поля');
+    return;
+  }
+  
+  try {
+    /*
+      Точка интеграции: регистрация
+      - POST /api/register
+      - тело: { username, password }
+      - успешный ответ: 201 Created
+    */
+    const res = await fetch('/api/register', { 
+      method: 'POST', 
+      body: JSON.stringify({ username, password }), 
+      headers: { 'Content-Type':'application/json' } 
+    });
+    
+    if (res.status === 201) {
+      log('✅ Регистрация успешна');
+      document.getElementById('regUser').value = '';
+      document.getElementById('regPass').value = '';
+    } else {
+      const text = await res.text();
+      log('❌ Ошибка регистрации: ' + (text || 'неизвестная ошибка'));
+    }
+  } catch(e) { 
+    log('❌ Ошибка регистрации: ' + e.message);
+  }
+};
+
+document.getElementById('loginBtn').onclick = async () => {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  
+  if (!username || !password) {
+    log('⚠️ Заполните все поля');
+    return;
+  }
+  
+  try {
+    /*
+      Точка интеграции: логин
+      - POST /api/login
+      - тело: { username, password }
+      - ответ: { token }
+      - токен сохраняется в sessionStorage под ключом 'vc_token' и
+        используется при отправке join по WebSocket
+    */
+    const res = await fetch('/api/login', { 
+      method: 'POST', 
+      body: JSON.stringify({ username, password }), 
+      headers: { 'Content-Type':'application/json' } 
+    });
+    
+    const j = await res.json();
+    if (j.token) {
+      sessionStorage.setItem('vc_token', j.token);
+      updateTokenDisplay('✅ Выполнен вход', true);
+      log('✅ Вход выполнен успешно');
+      document.getElementById('loginUser').value = '';
+      document.getElementById('loginPass').value = '';
+    } else {
+      updateTokenDisplay('❌ Ошибка входа', false);
+      log('❌ Ошибка входа: неверные данные');
+    }
+  } catch(e) { 
+    updateTokenDisplay('❌ Ошибка входа', false);
+    log('❌ Ошибка входа: ' + e.message);
+  }
+};
+
+document.getElementById('leaveBtn').onclick = () => {
+  if (ws) {
+    ws.send(JSON.stringify({ type: "leave" }));
+    ws.close();
+  }
+  if (pc) {
+    pc.getSenders().forEach(s => pc.removeTrack(s));
+    pc.close();
+    pc = null;
+  }
+  if (localStream) {
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
+  clearMediaTiles();
+  document.getElementById('connectBtn').disabled = false;
+  document.getElementById('leaveBtn').disabled = true;
+  document.getElementById('statsBtn').disabled = true;
+  if (statsInterval) { 
+    clearInterval(statsInterval); 
+    statsInterval = null;
+    document.getElementById('statsBtn').textContent = 'Статистика';
+  }
+  log("👋 Покинул комнату");
+};
+
+document.getElementById('statsBtn').onclick = () => {
+  if (!pc) return;
+  
+  const show = async () => {
+    try {
+      const stats = await pc.getStats();
+      let hasStats = false;
+      stats.forEach(report => {
+        if (report.type === 'outbound-rtp' || report.type === 'inbound-rtp') {
+          hasStats = true;
+          const direction = report.type === 'outbound-rtp' ? 'Исходящий' : 'Входящий';
+          const packets = report.packetsSent || report.packetsReceived || 0;
+          const bytes = report.bytesSent || report.bytesReceived || 0;
+          const jitter = report.jitter || 0;
+          log(`${direction}: пакетов=${packets}, байт=${bytes}, джиттер=${jitter.toFixed(2)}`);
+        }
+      });
+      if (!hasStats) {
+        log('📊 Статистика пока недоступна');
+      }
+    } catch(e) {
+      log('❌ Ошибка получения статистики: ' + e.message);
+    }
+  };
+  
+  show();
+  
+  if (!statsInterval) {
+    statsInterval = setInterval(show, 3000);
+    document.getElementById('statsBtn').textContent = 'Остановить статистику';
+    log('📊 Статистика включена (обновление каждые 3 сек)');
+  } else {
+    clearInterval(statsInterval); 
+    statsInterval = null;
+    document.getElementById('statsBtn').textContent = 'Статистика';
+    log('📊 Статистика остановлена');
+  }
+};
+
+// Проверка сохраненного токена при загрузке
+window.addEventListener('DOMContentLoaded', () => {
+  /*
+    Проверка токена при загрузке страницы
+    - Если токен найден в sessionStorage, помечаем UI как авторизованный
+    - Заметьте: token хранится в sessionStorage (не между вкладками)
+  */
+  const token = sessionStorage.getItem('vc_token');
+  if (token) {
+    updateTokenDisplay('✅ Токен найден (вход выполнен ранее)', true);
+    log('ℹ️ Найден сохраненный токен');
+  } else {
+    updateTokenDisplay('⚠️ Необходимо войти в систему', false);
+  }
+  log('🚀 Интерфейс загружен');
+});
+</script>
+</body>
+</html>
